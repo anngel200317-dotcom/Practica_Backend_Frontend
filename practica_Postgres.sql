@@ -1,5 +1,5 @@
 -- ==========================================================
--- 1. LIMPIEZA TOTAL
+-- 1. LIMPIEZA TOTAL (Para empezar desde cero y evitar errores)
 -- ==========================================================
 DROP TABLE IF EXISTS usuarios CASCADE;
 DROP TABLE IF EXISTS materias CASCADE;
@@ -24,15 +24,6 @@ CREATE TABLE materias (
     nombre VARCHAR(100) NOT NULL
 );
 
--- ==========================================================
--- 4. INSERTAR USUARIOS
--- ==========================================================
-INSERT INTO usuarios (cedula, nombre, clave) VALUES 
-('1316009974', 'Juan Zambrano', 'admin2025');
-
--- ==========================================================
--- 5. INSERTAR MATERIAS
--- ==========================================================
 INSERT INTO materias (codigo, nombre) VALUES 
 ('SIS-101', 'Fundamentos de Programación'),
 ('SIS-102', 'Bases de Datos I'),
@@ -44,7 +35,7 @@ INSERT INTO materias (codigo, nombre) VALUES
 ('SIS-400', 'Arquitectura de Software');
 
 -- ==========================================================
--- 6. VERIFICACIÓN FINAL
+-- 5. VERIFICACIÓN FINAL
 -- ==========================================================
-SELECT * FROM usuarios;
+SELECT * FROM usuarios; 
 SELECT * FROM materias;
