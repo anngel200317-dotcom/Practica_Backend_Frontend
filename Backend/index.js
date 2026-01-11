@@ -4,8 +4,19 @@ import { pool } from "./db.js";
 import bcrypt from "bcryptjs";
 
 const app = express();
+
+// ======================
+//      MIDDLEWARES
+// ======================
 app.use(cors());
 app.use(express.json());
+
+// ======================
+//      RUTA RAÍZ
+// ======================
+app.get("/", (req, res) => {
+  res.send("API funcionando correctamente 🚀");
+});
 
 // ==========================================
 //      RUTAS DE USUARIOS
@@ -29,7 +40,6 @@ app.post("/usuarios", async (req, res) => {
     );
 
     res.json({ msg: "Usuario registrado", data: result.rows[0] });
-
   } catch (error) {
     if (error.code === "23505") {
       return res.status(400).json({ msg: "Cédula ya registrada" });
@@ -68,16 +78,17 @@ app.put("/usuarios/:id", async (req, res) => {
   try {
     const { cedula, nombre, clave } = req.body;
 
+    const hash = clave ? await bcrypt.hash(clave, 10) : undefined;
+
     const result = await pool.query(
       "UPDATE usuarios SET cedula=$1, nombre=$2, clave=$3 WHERE id=$4 RETURNING *",
-      [cedula, nombre, clave, req.params.id]
+      [cedula, nombre, hash, req.params.id]
     );
 
     if (result.rows.length === 0)
       return res.status(404).json({ msg: "Usuario no encontrado" });
 
     res.json({ msg: "Usuario actualizado", data: result.rows[0] });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -205,7 +216,7 @@ app.delete("/estudiantes/:id", async (req, res) => {
 });
 
 // ==========================================
-//      NOTAS (CORREGIDO)
+//      NOTAS
 // ==========================================
 
 app.get("/notas", async (req, res) => {
@@ -286,7 +297,6 @@ app.post("/login", async (req, res) => {
       return res.status(401).json({ msg: "Contraseña incorrecta" });
 
     res.json({ msg: "Login exitoso", usuario: result.rows[0] });
-
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -316,13 +326,18 @@ async function crearAdminPorDefecto() {
       console.log("✅ Admin creado");
     }
   } catch (error) {
-    console.error("Error creando admin:", error);
+    console.error("❌ Error creando admin:", error.message);
   }
 }
 
 crearAdminPorDefecto();
 
 // ==========================================
-app.listen(3000, () =>
-  console.log("🚀 Servidor corriendo en http://localhost:3000")
-);
+//      SERVIDOR
+// ==========================================
+
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+});
